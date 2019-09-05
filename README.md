@@ -1,2 +1,10 @@
-# file-permissions-middleware
-An http middleware that helps you manage file perimssions
+# path-permissions-middleware
+<a href='https://github.com/opal-labs/path-permissions-middleware'>![gopherbadger-tag-do-not-edit](https://img.shields.io/badge/Go%20Coverage-100%25-brightgreen.svg?longCache=true&style=flat)</a>
+
+A sample http middleware that helps you manage path perimssions. The code exposes a function `CreateFilePermissionsMiddleware` that creates a new middleware to be included in a regular golang http stack. The function requires that you pass a struct that satisfies the `Helpers` interface to it.
+
+The `Helpers` interface has two functions that need to be written by you. The first is `GetUserGrants`. `GetUserGrants` takes the http request object and returns a list of `PathGrant` objects. You could for example get the user grants from the `http.Context` for the request having loaded the grants when you authenticated the request eariler in the middleware stack, or you could get the user's id from the request and query a database. The method is up to you, it just needs to get a list of paths the user has been granted access to and the access level for each path. 
+
+The second function that the `Helpers` interface needs is the `GetRequestedPath` function. This function takes the http request object and extracts the requested path from it. This is mostly useful if there are is a prefix on your path that you need to strip, or some sort of processing with the request to get the path that is being requested. For example, if the url being passed is `https://test.com/files/hr`, you might want the requested path to be `/hr`, stripping the prefix from the path. The method of doing so is left up to the implementation. 
+
+**Note:** Currently only `GET` requests are allowed if the user had `Read` rights, and that `POST`, `PUT`, `PATCH` and `DELETE` requests are allowed if the user has `ReadWrite` rights. 
